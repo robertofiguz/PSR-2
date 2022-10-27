@@ -47,16 +47,9 @@ def main():
     cv2.createTrackbar('min R',"segmented_window", 0, 255, trackbar_partial)
     cv2.createTrackbar('max R',"segmented_window", 255, 255, trackbar_partial)
 
+    file_name = "limits.json"
     while True:
         ret, frame = capture.read()
-
-        file_name = "limits.json"
-
-        with open(file_name,"w") as file_handle:
-            json.dump(limits,file_handle)
-
-
-
 
     #-------#Adição das trackbars#-----------#
         
@@ -79,5 +72,8 @@ def main():
 
     capture.release()
     cv2.destroyAllWindows()
+
+    with open(file_name,"w") as file_handle:
+        json.dump(limits,file_handle)
 if __name__ == '__main__':
     main()

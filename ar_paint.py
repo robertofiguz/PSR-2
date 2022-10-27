@@ -114,10 +114,9 @@ def main():
         
         _, img = cap.read()
 
-        image = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
         cv2.namedWindow('original',cv2.WINDOW_NORMAL)
 
-        mask = cv2.inRange(image, lower, upper)
+        mask = cv2.inRange(img, lower, upper)
 
         findObject(img, mask, options)
 
