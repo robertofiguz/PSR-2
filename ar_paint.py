@@ -21,7 +21,7 @@ from copy import deepcopy
 ##############################################
 
 def paint(options):
-    if len(options['xs'])!=0 & len(options['ys'])!=0:
+    if (len(options['xs'])!=0) & (len(options['ys'])!=0):
         x1 = options['xs'][-2]
         y1 = options['ys'][-2]
         x2 = options['xs'][-1]
