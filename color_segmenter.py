@@ -34,8 +34,8 @@ def main():
         #segmented_window = "Segmented"
     cv2.namedWindow("original_window",cv2.WINDOW_NORMAL)
     cv2.namedWindow("segmented_window",cv2.WINDOW_NORMAL)
-    original_limits= {'limits': {'B': {'max': 100, 'min':50},
-                                'G': {'max': 100, 'min': 50},
+    original_limits= {'limits': {'B': {'max': 255, 'min':0},
+                                'G': {'max': 255, 'min': 0},
                                 'R': {'max': 255, 'min': 0}}}
 
     limits=copy.deepcopy(original_limits)
@@ -53,7 +53,7 @@ def main():
         file_name = "limits.json"
 
         with open(file_name,"w") as file_handle:
-            json.dump(str(limits),file_handle)
+            json.dump(limits,file_handle)
 
 
 

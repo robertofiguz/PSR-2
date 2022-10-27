@@ -123,7 +123,7 @@ def main():
 
         paint(options)
 
-        print(options)
+        #print(options)
 
         cv2.imshow('Original', img)
         cv2.imshow('Mask', mask)
