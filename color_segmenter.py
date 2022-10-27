@@ -24,39 +24,49 @@ def trackbar(_,window,limits):
     [limits["limits"]["B"]["max"], limits["limits"]["G"]["max"], limits["limits"]['R']["max"]] = max
 
 def main():
-    if cv2.VideoCapture(0).isOpened():
+    capture = cv2.VideoCapture(0)
+    if capture.isOpened():
         print("Capturing video from webcam")
     else:
         print("Camera is not working")
-
-
-    #original_window = "Original"
-    #segmented_window = "Segmented"
+    
+        #original_window = "Original"
+        #segmented_window = "Segmented"
     cv2.namedWindow("original_window",cv2.WINDOW_NORMAL)
     cv2.namedWindow("segmented_window",cv2.WINDOW_NORMAL)
+    while True:
+        ret, frame = capture.read()
+        original_limits= {'limits': {'B': {'max': 100, 'min':50},
+                                    'G': {'max': 100, 'min': 50},
+                                    'R': {'max': 255, 'min': 0}}}
+    
+        limits=copy.deepcopy(original_limits)
 
-    original_limits= {'limits': {'B': {'max': 255, 'min': 0},
-                                 'G': {'max': 255, 'min': 0},
-                                 'R': {'max': 255, 'min': 229}}}
-  
-    limits=copy.deepcopy(original_limits)
+        file_name = "limits.json"
 
-    file_name = "limits.json"
-
-    with open(file_name,"w") as file_handle:
-        json.dump(str(limits),file_handle)
-
-
-    trackbar_partial = partial(trackbar, window ="segmented_window", limits=limits)
-
-#-------#Adição das trackbars#-----------#
-    cv2.createTrackbar('min B',"segmented_window", 0, 255, trackbar_partial)
-    cv2.createTrackbar('max B',"segmented_window", 255, 255, trackbar_partial)
-    cv2.createTrackbar('min G',"segmented_window", 0, 255, trackbar_partial)
-    cv2.createTrackbar('max G',"segmented_window", 255, 255, trackbar_partial)
-    cv2.createTrackbar('min R',"segmented_window", 0, 255, trackbar_partial)
-    cv2.createTrackbar('max R',"segmented_window", 255, 255, trackbar_partial)
+        with open(file_name,"w") as file_handle:
+            json.dump(str(limits),file_handle)
 
 
+
+        trackbar_partial = partial(trackbar, window ="segmented_window", limits=limits)
+
+    #-------#Adição das trackbars#-----------#
+        cv2.createTrackbar('min B',"segmented_window", 0, 255, trackbar_partial)
+        cv2.createTrackbar('max B',"segmented_window", 255, 255, trackbar_partial)
+        cv2.createTrackbar('min G',"segmented_window", 0, 255, trackbar_partial)
+        cv2.createTrackbar('max G',"segmented_window", 255, 255, trackbar_partial)
+        cv2.createTrackbar('min R',"segmented_window", 0, 255, trackbar_partial)
+        cv2.createTrackbar('max R',"segmented_window", 255, 255, trackbar_partial)
+        
+       
+        segmented_frame = cv2.inRange(frame, (limits["limits"]["B"]["min"], limits["limits"]["G"]["min"], limits["limits"]["R"]["min"]), (limits["limits"]["B"]["max"], limits["limits"]["G"]["max"], limits["limits"]["R"]["max"]))
+
+        cv2.imshow('video', segmented_frame)
+        if cv2.waitKey(1) & 0xff == ord("q"):
+            break
+
+    capture.release()
+    cv2.destroyAllWindows()
 if __name__ == '__main__':
     main()
