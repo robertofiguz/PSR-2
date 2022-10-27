@@ -34,13 +34,21 @@ def main():
         #segmented_window = "Segmented"
     cv2.namedWindow("original_window",cv2.WINDOW_NORMAL)
     cv2.namedWindow("segmented_window",cv2.WINDOW_NORMAL)
+    original_limits= {'limits': {'B': {'max': 100, 'min':50},
+                                'G': {'max': 100, 'min': 50},
+                                'R': {'max': 255, 'min': 0}}}
+
+    limits=copy.deepcopy(original_limits)
+    trackbar_partial = partial(trackbar, window ="segmented_window", limits=limits)
+    cv2.createTrackbar('min B',"segmented_window", 0, 255, trackbar_partial)
+    cv2.createTrackbar('max B',"segmented_window", 255, 255, trackbar_partial)
+    cv2.createTrackbar('min G',"segmented_window", 0, 255, trackbar_partial)
+    cv2.createTrackbar('max G',"segmented_window", 255, 255, trackbar_partial)
+    cv2.createTrackbar('min R',"segmented_window", 0, 255, trackbar_partial)
+    cv2.createTrackbar('max R',"segmented_window", 255, 255, trackbar_partial)
+
     while True:
         ret, frame = capture.read()
-        original_limits= {'limits': {'B': {'max': 100, 'min':50},
-                                    'G': {'max': 100, 'min': 50},
-                                    'R': {'max': 255, 'min': 0}}}
-    
-        limits=copy.deepcopy(original_limits)
 
         file_name = "limits.json"
 
@@ -49,20 +57,23 @@ def main():
 
 
 
-        trackbar_partial = partial(trackbar, window ="segmented_window", limits=limits)
 
     #-------#Adição das trackbars#-----------#
-        cv2.createTrackbar('min B',"segmented_window", 0, 255, trackbar_partial)
-        cv2.createTrackbar('max B',"segmented_window", 255, 255, trackbar_partial)
-        cv2.createTrackbar('min G',"segmented_window", 0, 255, trackbar_partial)
-        cv2.createTrackbar('max G',"segmented_window", 255, 255, trackbar_partial)
-        cv2.createTrackbar('min R',"segmented_window", 0, 255, trackbar_partial)
-        cv2.createTrackbar('max R',"segmented_window", 255, 255, trackbar_partial)
         
        
-        segmented_frame = cv2.inRange(frame, (limits["limits"]["B"]["min"], limits["limits"]["G"]["min"], limits["limits"]["R"]["min"]), (limits["limits"]["B"]["max"], limits["limits"]["G"]["max"], limits["limits"]["R"]["max"]))
+        segmented_frame = cv2.inRange(
+            frame, 
+        (limits["limits"]["B"]["min"], 
+        limits["limits"]["G"]["min"], 
+        limits["limits"]["R"]["min"]), 
 
-        cv2.imshow('video', segmented_frame)
+        (limits["limits"]["B"]["max"], 
+        limits["limits"]["G"]["max"], 
+        limits["limits"]["R"]["max"])
+        )
+
+        cv2.imshow('segmented_window', segmented_frame)
+        cv2.imshow('original_window', frame)
         if cv2.waitKey(1) & 0xff == ord("q"):
             break
 
