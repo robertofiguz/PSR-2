@@ -73,8 +73,6 @@ def findObject(img, mask, options):
                 options['ys'].append(int(y+h/2))
 def main():
 
-    global paint_wind, xs, ys, pencil_color, pencil_size
-
     parser = argparse.ArgumentParser(description='Definition of test mode')
     parser.add_argument('-j', '--json', type=str, required=True, help='Full path to json file.')
     parser.add_argument('-usp', '--use_shake_prevention', type=str, required=False, help='Runs the snake prevention code.')
@@ -84,45 +82,37 @@ def main():
     #E retira os valores de max e min definidos no color_segmenter.py e coloca-os numa lista
     min=[]
     max=[]
+
     f=open(args['json'])
     data=json.load(f)
     pprint(data)
     for i in data['limits'].values():
         min.append(i.get('min'))
         max.append(i.get('max'))
-    #print(min)
-    #print(max)
-    
     f.close() #fechar o ficheiro
 
     lower = np.array(min)
     upper = np.array(max)  
     
-    # white_img = cv2.imread('../images/altascar.png')
-    # window_name = 'paint'
-    # cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
-
     paint_w = np.zeros((471,636,3))+255
-    cv2.namedWindow('Paint', cv2.WINDOW_AUTOSIZE)
 
     options = {'paint_wind':  paint_w,'xs': [], 'ys':[], 'pencil_color':(0,255,0), 'pencil_size':1}  
-    
-
+   
     cap = cv2.VideoCapture(0)
-    
+
+    cv2.namedWindow('Original',cv2.WINDOW_NORMAL)
+    cv2.namedWindow('Mask',cv2.WINDOW_NORMAL)
+    cv2.namedWindow('paint',cv2.WINDOW_NORMAL)
+
     while True:
         
         _, img = cap.read()
-
-        cv2.namedWindow('original',cv2.WINDOW_NORMAL)
 
         mask = cv2.inRange(img, lower, upper)
 
         findObject(img, mask, options)
 
         paint(options)
-
-        #print(options)
 
         cv2.imshow('Original', img)
         cv2.imshow('Mask', mask)
@@ -136,12 +126,5 @@ def main():
 
     cv2.destroyAllWindows()
     
-    # #estrutura de opções
-    # if args['use_snake_prevention']:
-    #     snakePrevention()
-    
-    # else:
-    #     paint()
-
 if __name__ == '__main__':
     main()
