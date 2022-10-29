@@ -33,7 +33,9 @@ def main():
         #original_window = "Original"
         #segmented_window = "Segmented"
     cv2.namedWindow("original_window",cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("Original_window", 500, 500)
     cv2.namedWindow("segmented_window",cv2.WINDOW_NORMAL)
+    cv2.resizeWindow("segmented_window", 500, 500)
     original_limits= {'limits': {'B': {'max': 255, 'min':0},
                                 'G': {'max': 255, 'min': 0},
                                 'R': {'max': 255, 'min': 0}}}
