@@ -16,6 +16,7 @@ import argparse
 import cv2
 import numpy as np
 import json
+from time import ctime
 from pprint import pprint
 ##############################################
 
@@ -56,14 +57,14 @@ def parameters(key, options):
 
     if key == ord('w'): #gravar a tela atual
         print('Save image')
-        
+        cv2.imwrite('drawing_'+ctime().replace(' ','_')+'.png', options['paint_wind'])        
 
 def findObject(img, mask, options):
     mask_contours, hierarchy = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     if len(mask_contours) != 0:
         for mask_contour in mask_contours:
-            if cv2.contourArea(mask_contour) > 10000: #blindagem para não captar objetos mais pequenos que 10000 pixeis
+            if cv2.contourArea(mask_contour) > 1000: #blindagem para não captar objetos mais pequenos que 10000 pixeis
                 x, y, w, h = cv2.boundingRect(mask_contour)
                 cv2.circle(img, (int(x+w/2), int(y+h/2)), 5, (0, 0, 255), -1) #cv2.circle(image, center_coordinates, radius, color, thickness)
                 options['xs'].append(int(x+w/2))
