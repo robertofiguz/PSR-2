@@ -39,7 +39,7 @@ def main():
     file_name = "limits.json"
 
     with open(file_name,"w") as file_handle:
-        json.dump(str(limits),file_handle)
+        json.dump(limits,file_handle)
 
 
     trackbar_partial = partial(trackbar, window ="segmented_window", limits=limits)
