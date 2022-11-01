@@ -13,9 +13,11 @@
 
 ################## Library ###################
 import argparse
+from copy import deepcopy
 import cv2
 import numpy as np
 import json
+import math
 from time import ctime
 from pprint import pprint
 ##############################################
@@ -70,7 +72,7 @@ def findObject(img, mask, options):
                 options['xs'].append(int(x+w/2))
                 options['ys'].append(int(y+h/2))
 def main():
-
+    mode = "regular"
     parser = argparse.ArgumentParser(description='Definition of test mode')
     parser.add_argument('-j', '--json', type=str, required=True, help='Full path to json file.')
     parser.add_argument('-usp', '--use_shake_prevention', type=str, required=False, help='Runs the snake prevention code.')
@@ -105,26 +107,52 @@ def main():
     cv2.resizeWindow('Mask', 700, 500)
     cv2.namedWindow('paint',cv2.WINDOW_NORMAL)
     cv2.resizeWindow('paint', 700, 500)
-    
+    def paint_circle(window, center, radius):
+        #draw an ellipse
+        radius = int(math.sqrt((center[0]-center[1])**2 + (radius[0]-radius[1])**2))
+        cv2.circle(window, center, radius, options['pencil_color'], -1)
+
+    def paint_rectangle(window, center, radius):
+        #draw an ellipse
+        cv2.rectangle(window, center, radius, options['pencil_color'], -1)
+        
     while True:
-       
         _, img = cap.read()
 
         mask = cv2.inRange(img, lower, upper)
 
         findObject(img, mask, options)
+        press_key = cv2.waitKey(30)
+        print(mode)
+        if press_key == ord('o'):
+            if mode != 'circle':   
+                center = (options['xs'][-1], options['ys'][-1])
+            mode = 'circle'
+        elif press_key == ord('t'):
+            if mode != 'rectangle':
+                center = (options['xs'][-1], options['ys'][-1])
+            mode = 'rectangle'
+        elif press_key == ord('q'): #sai do programa 
+            break
+        else:
+            mode = "regular"
+            parameters(press_key, options)
 
-        paint(options)
+        if mode == 'regular':
+            print("reset")
+            image_copy = deepcopy(options['paint_wind'])
+            paint(options)
+        elif mode == 'circle':
+            options['paint_wind'] = image_copy
+            paint_circle(options['paint_wind'], center, (options['xs'][-1], options['ys'][-1]))
+        elif mode == 'rectangle':
+            options['paint_wind'] = image_copy
+            paint_rectangle(options['paint_wind'], center, (options['xs'][-1], options['ys'][-1]))
+      
 
         cv2.imshow('Original', img)
         cv2.imshow('Mask', mask)
         cv2.imshow('paint', options['paint_wind'])
-
-        press_key = cv2.waitKey(30)
-        if press_key == ord('q'): #sai do programa 
-            break
-        else:
-            parameters(press_key, options)
 
     cv2.destroyAllWindows()
     
