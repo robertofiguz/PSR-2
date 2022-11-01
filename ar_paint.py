@@ -14,6 +14,7 @@
 ################## Library ###################
 import argparse
 from copy import deepcopy
+from tkinter import E
 import cv2
 import numpy as np
 import json
@@ -76,6 +77,8 @@ def main():
     parser = argparse.ArgumentParser(description='Definition of test mode')
     parser.add_argument('-j', '--json', type=str, required=True, help='Full path to json file.')
     parser.add_argument('-usp', '--use_shake_prevention', type=str, required=False, help='Runs the snake prevention code.')
+    parser.add_argument('-f', '--use_feed',  required=False, help='Uses the camera feed as canvas.')
+
     args = vars(parser.parse_args())
 
     #Abre o ficheiro json
@@ -97,8 +100,8 @@ def main():
     paint_w = np.zeros((500,700,3),dtype = np.uint8) #criação da "tela" com o mesmo tamanho que as outras janelas->(500,700) corresponde ao tamanho, 3 é o canal e uint8 é o tipo
     paint_w.fill(255) #correponde à cor de background, 255 corresponde à cor branca
 
-    options = {'paint_wind':  paint_w,'xs': [], 'ys':[], 'pencil_color':(0,255,0), 'pencil_size':1}  
    
+    options = {'paint_wind':  paint_w,'xs': [], 'ys':[], 'pencil_color':(0,255,0), 'pencil_size':1}  
     cap = cv2.VideoCapture(0)
 
     cv2.namedWindow('Original',cv2.WINDOW_NORMAL)
@@ -107,6 +110,7 @@ def main():
     cv2.resizeWindow('Mask', 700, 500)
     cv2.namedWindow('paint',cv2.WINDOW_NORMAL)
     cv2.resizeWindow('paint', 700, 500)
+
     def paint_circle(window, center, radius):
         #draw an ellipse
         radius = int(math.sqrt((center[0]-center[1])**2 + (radius[0]-radius[1])**2))
@@ -115,12 +119,27 @@ def main():
     def paint_rectangle(window, center, radius):
         #draw an ellipse
         cv2.rectangle(window, center, radius, options['pencil_color'], -1)
-        
+    def draw_on_feed(options):
+        if (len(options['xs'])>10) & (len(options['ys'])>10):#Para garantir que as litas têm pelo menos dois elementos
+
+            xs = iter(options['xs'])
+            ys = iter(options['ys'])
+            last_used = (next(xs), next(ys))
+            try:
+                for x, y in zip(xs, ys):
+                    cv2.line(options['paint_wind'], (last_used[0], last_used[1]), (x, y), options['pencil_color'], options['pencil_size'])
+                    last_used = (x, y)
+            except Exception:
+                pass
     while True:
         _, img = cap.read()
-
+        
+        if args['use_feed']:
+            options['paint_wind'] = img
+        else:
+            options['paint_wind'] = paint_w
+        
         mask = cv2.inRange(img, lower, upper)
-
         findObject(img, mask, options)
         press_key = cv2.waitKey(30)
         print(mode)
@@ -141,18 +160,23 @@ def main():
         if mode == 'regular':
             print("reset")
             image_copy = deepcopy(options['paint_wind'])
-            paint(options)
+            if args['use_feed']:
+                draw_on_feed(options)
+            else:
+                paint(options)
         elif mode == 'circle':
-            options['paint_wind'] = image_copy
             paint_circle(options['paint_wind'], center, (options['xs'][-1], options['ys'][-1]))
         elif mode == 'rectangle':
             options['paint_wind'] = image_copy
             paint_rectangle(options['paint_wind'], center, (options['xs'][-1], options['ys'][-1]))
-      
+        if mode != 'regular':
+            options['paint_wind'] = image_copy
+        
 
         cv2.imshow('Original', img)
         cv2.imshow('Mask', mask)
         cv2.imshow('paint', options['paint_wind'])
+
 
     cv2.destroyAllWindows()
     
