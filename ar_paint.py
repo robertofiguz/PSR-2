@@ -13,6 +13,7 @@
 
 ################## Library ###################
 import argparse
+from copy import deepcopy
 import cv2
 import numpy as np
 import json
@@ -54,6 +55,9 @@ def parameters(key, options):
         print('Clear the screen')
         options['xs']=[]
         options['ys']=[]
+        clean = np.zeros((500,700,3),dtype = np.uint8)
+        clean. fill(255)
+        options['paint_wind'] = clean
 
     if key == ord('w'): #gravar a tela atual
         print('Save image')
@@ -70,7 +74,7 @@ def findObject(img, mask, options):
                 options['xs'].append(int(x+w/2))
                 options['ys'].append(int(y+h/2))
 def main():
-
+    global paint_w
     parser = argparse.ArgumentParser(description='Definition of test mode')
     parser.add_argument('-j', '--json', type=str, required=True, help='Full path to json file.')
     parser.add_argument('-usp', '--use_shake_prevention', type=str, required=False, help='Runs the snake prevention code.')
@@ -95,7 +99,7 @@ def main():
     paint_w = np.zeros((500,700,3),dtype = np.uint8) #criação da "tela" com o mesmo tamanho que as outras janelas->(500,700) corresponde ao tamanho, 3 é o canal e uint8 é o tipo
     paint_w.fill(255) #correponde à cor de background, 255 corresponde à cor branca
 
-    options = {'paint_wind':  paint_w,'xs': [], 'ys':[], 'pencil_color':(0,255,0), 'pencil_size':1}  
+    options = {'paint_wind':  paint_w ,'xs': [], 'ys':[], 'pencil_color':(0,255,0), 'pencil_size':1}  
    
     cap = cv2.VideoCapture(0)
 
