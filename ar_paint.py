@@ -144,7 +144,6 @@ def main():
         key_presses.append(press_key)
         if len(set(key_presses)) == 1:
             key = key_presses[0]
-        print(mode)
         if key == ord('o'):
             if mode != 'circle':   
                 center = (options['xs'][-1], options['ys'][-1])
@@ -157,7 +156,7 @@ def main():
             break
         else:
             mode = "regular"
-            parameters(key, options)
+            parameters(press_key, options)
 
         if mode != "regular":
             try:
@@ -179,8 +178,6 @@ def main():
         cv2.imshow('Original', img)
         cv2.imshow('Mask', mask)
         cv2.imshow('paint', options['paint_wind'])
-        s = cv2.threshold(options['paint_wind'], 100,50,cv2.THRESH_BINARY)
-        #s = img+options['paint_wind']
         s =  cv2.bitwise_and(img, options['paint_wind'])
         cv2.imshow('s',s)
     cv2.destroyAllWindows()
