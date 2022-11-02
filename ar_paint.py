@@ -13,10 +13,7 @@
 
 ################## Library ###################
 import argparse
-from copy import deepcopy
 import cv2
-from cv2 import cvtColor
-from matplotlib.pyplot import draw
 import numpy as np
 import json
 from copy import deepcopy
@@ -59,9 +56,6 @@ def parameters(key, options):
         options['paint_wind'].fill(255)
         options['xs']=[]
         options['ys']=[]
-        clean = np.zeros((500,700,3),dtype = np.uint8)
-        clean. fill(255)
-        options['paint_wind'] = clean
 
     if key == ord('w'): #gravar a tela atual
         print('Save image')
