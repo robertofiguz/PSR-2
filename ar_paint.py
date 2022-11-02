@@ -13,6 +13,7 @@
 
 ################## Library ###################
 import argparse
+from copy import deepcopy
 import cv2
 from cv2 import cvtColor
 from matplotlib.pyplot import draw
@@ -58,6 +59,9 @@ def parameters(key, options):
         options['paint_wind'].fill(255)
         options['xs']=[]
         options['ys']=[]
+        clean = np.zeros((500,700,3),dtype = np.uint8)
+        clean. fill(255)
+        options['paint_wind'] = clean
 
     if key == ord('w'): #gravar a tela atual
         print('Save image')
@@ -74,6 +78,7 @@ def findObject(img, mask, options):
                 options['xs'].append(int(x+w/2))
                 options['ys'].append(int(y+h/2))
 
+
 def compare_images(img1, img2):
     #check similarity between images
     s = cv2.subtract(img2, img1)
@@ -88,6 +93,7 @@ def compare_images(img1, img2):
 def main():
     mode = "regular"
     drawing = False
+
     parser = argparse.ArgumentParser(description='Definition of test mode')
     parser.add_argument('-j', '--json', type=str, required=True, help='Full path to json file.')
     parser.add_argument('-usp', '--use_shake_prevention', type=str, required=False, help='Runs the snake prevention code.')
@@ -110,6 +116,7 @@ def main():
 
     lower = np.array(min)
     upper = np.array(max)
+
    
     cap = cv2.VideoCapture(0)
     _, img = cap.read()
